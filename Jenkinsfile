@@ -38,7 +38,7 @@ pipeline {
 
         stage('环境准备') {
             steps {
-                sh '''
+                bat '''
                     echo "=== 准备测试环境 ==="
                     echo "工作目录: ${WORKSPACE}"
                     echo "Python环境:"
@@ -46,7 +46,10 @@ pipeline {
                     pip3 --version
 
                     # 创建测试目录
-                    mkdir -p ${REPORT_DIR} ${ALLURE_RESULTS} ${SCREENSHOT_DIR}
+                    mkdir -p ${WORKSPACE}/reports
+                    mkdir -p ${WORKSPACE}/allure-results
+                    mkdir -p ${WORKSPACE}/screenshots
+                    mkdir -p ${WORKSPACE}/logs
 
                     # 安装依赖
                     echo "安装Python依赖..."
@@ -63,7 +66,7 @@ pipeline {
             steps {
                 script {
                     if (params.DEVICE_TYPE == 'emulator') {
-                        sh '''
+                        bat '''
                             echo "启动模拟器..."
                             # 启动模拟器（根据你的模拟器配置调整）
                             emulator -avd Pixel_4_API_30 -no-audio -no-snapshot &
@@ -74,7 +77,7 @@ pipeline {
                             echo "设备已就绪"
                         '''
                     } else {
-                        sh '''
+                        bat '''
                             echo "使用真机测试..."
                             adb devices | grep -w device || {
                                 echo "错误：未找到已授权的Android设备"
@@ -88,7 +91,7 @@ pipeline {
 
         stage('安装测试应用') {
             steps {
-                sh """
+                bat """
                     echo "安装测试APK..."
                     if [ -f "${APP_APK}" ]; then
                         adb install -r "${APP_APK}"
@@ -125,7 +128,7 @@ pipeline {
                     echo "执行命令: ${pytestCmd}"
 
                     try {
-                        sh pytestCmd
+                        bat pytestCmd
                     } catch (Exception e) {
                         echo "测试执行出现异常: ${e}"
                         currentBuild.result = 'UNSTABLE'
@@ -136,7 +139,7 @@ pipeline {
 
         stage('收集结果') {
             steps {
-                sh '''
+                bat '''
                     echo "收集测试结果..."
 
                     # 收集设备日志
@@ -181,7 +184,7 @@ pipeline {
     post {
         always {
             echo "测试执行完成"
-            sh '''
+            bat '''
                 # 清理工作
                 adb shell pm clear ${APP_PACKAGE} || true
             '''
