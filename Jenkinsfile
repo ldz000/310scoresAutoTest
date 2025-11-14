@@ -89,18 +89,56 @@ pipeline {
             }
         }
 
-        stage('安装测试应用') {
+        stage('可靠的APK安装') {
             steps {
-                bat """
-                    echo "安装测试APK..."
-                    if [ -f "${APP_APK}" ]; then
-                        adb install -r "${APP_APK}"
-                        echo "APK安装成功"
-                    else
-                        echo "警告: APK文件不存在: ${APP_APK}"
-                        echo "继续执行测试（假设应用已安装）"
-                    fi
-                """
+                script {
+
+                    bat """
+                        echo "🔧 开始可靠的APK安装流程"
+
+                        echo "步骤1: 基础检查"
+                        if not exist "${APP_APK}" (
+                            echo "❌ 错误: ${APP_APK} 不存在"
+                            exit 1
+                        )
+
+                        echo "步骤2: 重启ADB"
+                        adb kill-server
+                        timeout /t 2 /nobreak
+                        adb start-server
+                        timeout /t 5 /nobreak
+
+                        echo "步骤3: 等待设备"
+                        adb wait-for-device
+                        echo "✅ 设备已连接"
+
+                        echo "步骤4: 卸载旧版本"
+                        adb uninstall ${APP_PACKAGE} >nul 2>&1 && echo "旧版本已卸载" || echo "无需卸载"
+
+                        echo "步骤5: 安装APK"
+                        echo "正在安装 ${APP_APK} ..."
+                        adb install -r -g "${APP_APK}"
+
+                        if !errorlevel! equ 0 (
+                            echo "✅ APK安装成功"
+                            adb shell pm list packages | findstr "${APP_PACKAGE}" && echo "✅ 验证: 应用已安装"
+                        ) else (
+                            echo "❌ 安装失败，错误码: !errorlevel!"
+                            echo "尝试替代方案..."
+
+                            echo "方法A: 推送到设备安装"
+                            adb push "${APP_APK}" /sdcard/
+                            adb shell pm install -r -g /sdcard/app-debug.apk
+
+                            if !errorlevel! equ 0 (
+                                echo "✅ 替代安装成功"
+                            ) else (
+                                echo "❌ 所有安装方法都失败"
+                                exit 1
+                            )
+                        )
+                    """
+                }
             }
         }
 
@@ -193,14 +231,14 @@ pipeline {
             emailext(
                 subject: "✅ Android UI自动化测试通过: ${env.JOB_NAME}",
                 body: "测试执行成功！报告: ${env.BUILD_URL}allure",
-                to: "team@example.com"
+                to: "liudazhao@halomobi.com"
             )
         }
         failure {
             emailext(
                 subject: "❌ Android UI自动化测试失败: ${env.JOB_NAME}",
                 body: "测试执行失败！详情: ${env.BUILD_URL}console",
-                to: "team@example.com"
+                to: "liudazhao@halomobi.com"
             )
         }
     }
