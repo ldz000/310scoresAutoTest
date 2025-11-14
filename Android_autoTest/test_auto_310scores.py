@@ -9,7 +9,7 @@ from Android_autoTest.conftest import logout
 
 
 @allure.epic("310scores Android 自动化测试报告")
-@allure.feature("登录测试(推送远程仓库)")
+@allure.feature("登录测试(远程仓库版)")
 def test_login(d, self=None):
     with allure.step("处理系列弹窗中......."):
         #判断got it 弹窗是否存在
