@@ -131,35 +131,35 @@ pipeline {
             }
         }
 
-        stage('执行UI自动化') {
+        stage('执行UI自动化脚本') {
             steps {
                 script {
-                    echo "开始执行 pytest + u2 自动化测试..."
+                    echo "🎯 开始执行 Android UI 自动化测试"
 
-                    // 构建 pytest 命令
-                    def pytestCmd = "cd ${PROJECT_DIR} && python3 -m pytest Android_autoTest/test_auto_310scores.py "
+                    bat """
+                        echo "=== 执行自动化测试脚本 ==="
 
-                    // 添加测试类型过滤
-                    if (params.TEST_TYPE == 'smoke') {
-                        pytestCmd += " -m smoke"
-                    } else if (params.TEST_TYPE == 'regression') {
-                        pytestCmd += " -m regression"
-                    }
+                        // 进入工作目录
+                        cd /d "${PROJECT_DIR}"
 
-                    // 添加参数（根据你的 pytest 配置调整）
-                    pytestCmd += " --alluredir=${ALLURE_RESULTS}"
-                    pytestCmd += " --html=${REPORT_DIR}/report.html"
-                    pytestCmd += " --self-contained-html"
-                    pytestCmd += " -v"
+                        // 检查当前目录
+                        echo "当前工作目录:"
+                        pwd
 
-                    echo "执行命令: ${pytestCmd}"
+                        // 检查文件是否存在
+                        if not exist "Android_autoTest/test_auto_310scores.py" (
+                            echo "❌ 测试文件不存在: Android_autoTest/test_auto_310scores.py"
+                            echo "当前目录结构:"
+                            dir
+                            exit 1
+                        )
 
-                    try {
-                        bat pytestCmd
-                    } catch (Exception e) {
-                        echo "测试执行出现异常: ${e}"
-                        currentBuild.result = 'UNSTABLE'
-                    }
+                        // 执行 pytest 测试脚本
+                        echo "开始执行 pytest 测试脚本..."
+                        python3 -m pytest Android_autoTest/test_auto_310scores.py -v
+
+                        echo "=== 自动化脚本执行完成 ==="
+                    """
                 }
             }
         }
@@ -172,12 +172,6 @@ pipeline {
                     # 收集设备日志
                     adb logcat -d > ${REPORT_DIR}/logcat.log || true
 
-                    # 收集测试截图
-                    adb pull /sdcard/DCIM/Screenshots ${SCREENSHOT_DIR} || true
-                    adb pull /sdcard/Pictures/Screenshots ${SCREENSHOT_DIR} || true
-
-                    # 如果使用 u2 的截图功能，可能还需要拉取其他目录
-                    adb shell "ls /sdcard/" > ${REPORT_DIR}/sdcard_contents.log || true
                 '''
 
                 // 归档测试产物
