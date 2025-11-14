@@ -137,7 +137,7 @@ pipeline {
                     echo "开始执行 pytest + u2 自动化测试..."
 
                     // 构建 pytest 命令
-                    def pytestCmd = "cd ${TEST_DIR} && python3 -m pytest"
+                    def pytestCmd = "cd ${PROJECT_DIR}/Android_autoTest && python3 -m pytest test_auto_310scores.py "
 
                     // 添加测试类型过滤
                     if (params.TEST_TYPE == 'smoke') {
