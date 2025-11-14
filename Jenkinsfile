@@ -131,34 +131,57 @@ pipeline {
             }
         }
 
-        stage('执行UI自动化脚本') {
+        stage('执行自动化脚本') {
             steps {
                 script {
-                    echo "🎯 开始执行 Android UI 自动化测试"
-
                     bat """
-                        echo "=== 执行自动化测试脚本 ==="
+                        echo "=== 完整的执行环境检查 ==="
 
-                        // 进入工作目录
+                        // 1. 检查工作目录
+                        echo "1. 工作目录:"
                         cd /d "${PROJECT_DIR}"
-
-                        // 检查当前目录
-                        echo "当前工作目录:"
                         pwd
 
-                        // 检查文件是否存在
+                        // 2. 检查文件是否存在
+                        echo "2. 检查测试文件..."
                         if not exist "Android_autoTest/test_auto_310scores.py" (
-                            echo "❌ 测试文件不存在: Android_autoTest/test_auto_310scores.py"
+                            echo "❌ 测试文件不存在"
                             echo "当前目录结构:"
                             dir
                             exit 1
                         )
+                        echo "✅ 测试文件存在"
 
-                        // 执行 pytest 测试脚本
-                        echo "开始执行 pytest 测试脚本..."
-                        python3 -m pytest Android_autoTest/test_auto_310scores.py -v
+                        // 3. 检查Python环境
+                        echo "3. 检查Python..."
+                        set PYTHON_CMD=unknown
 
-                        echo "=== 自动化脚本执行完成 ==="
+                        python --version >nul 2>&1 && set PYTHON_CMD=python
+                        if "%PYTHON_CMD%"=="unknown" python3 --version >nul 2>&1 && set PYTHON_CMD=python3
+                        if "%PYTHON_CMD%"=="unknown" py --version >nul 2>&1 && set PYTHON_CMD=py
+
+                        if "%PYTHON_CMD%"=="unknown" (
+                            echo "❌ 未找到Python命令"
+                            echo "请安装Python 3.6+ 并添加到系统PATH"
+                            exit 1
+                        )
+
+                        echo "✅ 使用Python命令: %PYTHON_CMD%"
+                        %PYTHON_CMD% --version
+
+                        // 4. 检查pytest安装
+                        echo "4. 检查pytest..."
+                        %PYTHON_CMD% -c "import pytest" && echo "✅ pytest 已安装" || (
+                            echo "❌ pytest 未安装"
+                            echo "正在安装pytest..."
+                            %PYTHON_CMD% -m pip install pytest
+                        )
+
+                        // 5. 执行测试
+                        echo "5. 执行测试..."
+                        %PYTHON_CMD% -m pytest Android_autoTest/test_auto_310scores.py -v
+
+                        echo "✅ 测试执行成功"
                     """
                 }
             }
