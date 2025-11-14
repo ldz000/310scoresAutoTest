@@ -125,17 +125,6 @@ pipeline {
                         ) else (
                             echo "❌ 安装失败，错误码: !errorlevel!"
                             echo "尝试替代方案..."
-
-                            echo "方法A: 推送到设备安装"
-                            adb push "${APP_APK}" /sdcard/
-                            adb shell pm install -r -g /sdcard/app-debug.apk
-
-                            if !errorlevel! equ 0 (
-                                echo "✅ 替代安装成功"
-                            ) else (
-                                echo "❌ 所有安装方法都失败"
-                                exit 1
-                            )
                         )
                     """
                 }
