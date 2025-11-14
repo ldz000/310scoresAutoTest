@@ -4,7 +4,7 @@ pipeline {
     parameters {
         choice(
             name: 'TEST_TYPE',
-            choices: ['smoke', 'regression', 'all'],
+            choices: ['smoke', 'all'],
             description: '310ui自动化'
         )
         choice(
@@ -30,7 +30,7 @@ pipeline {
         stage('拉取代码') {
             steps {
                 echo "从 GitHub 拉取最新代码..."
-                git branch: 'main',
+                git branch: 'master',
                     url: 'https://github.com/ldz000/310scoresAutoTest.git',
                     credentialsId: 'android-test-github'
             }
