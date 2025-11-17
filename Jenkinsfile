@@ -53,7 +53,8 @@ pipeline {
 
                     # 安装依赖
                     echo "安装Python依赖..."
-                    pip3 install -r requirements.txt
+                    bat '"C:/Users/EDY/AppData/Local/Microsoft/WindowsApps/python3.exe" --version'
+                    bat '"C:/Users/EDY/AppData/Local/Microsoft/WindowsApps/python3.exee" install -r requirements.txt'
 
                     # 检查设备连接
                     echo "检查Android设备..."
