@@ -1,3 +1,5 @@
+import allure
+
 pipeline {
     agent any
 
