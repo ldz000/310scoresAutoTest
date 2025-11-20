@@ -53,10 +53,9 @@ pipeline {
                     mkdir -p ${WORKSPACE}/screenshots
                     mkdir -p ${WORKSPACE}/logs
 
-
-
-                    echo "安装核心依赖..."
-                    pip install allure-pytest==2.32.0 pytest==8.4.1 requests==2.31.0 -i https://pypi.douban.com/simple/
+                    # 安装依赖
+                    echo "安装Python依赖..."
+                    pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn --force-reinstall
 
 
                     # 检查设备连接
