@@ -53,17 +53,10 @@ pipeline {
                     mkdir -p ${WORKSPACE}/screenshots
                     mkdir -p ${WORKSPACE}/logs
 
-                    # 安装依赖
-                    echo "安装Python依赖..."
-                    pip3 install --user -r requirements.txt
 
-                    #查看内容
-                    echo "5. requirements.txt内容:"
-                    type requirements.txt
 
-                    echo "步骤3: 验证安装结果"
-                    pip3 show allure-pytest
-                    python -c "import allure; print('✓ Allure导入成功')"
+                    echo "安装核心依赖..."
+                    pip install allure-pytest==2.32.0 pytest==8.4.1 requests==2.31.0 -i https://pypi.douban.com/simple/
 
 
                     # 检查设备连接
