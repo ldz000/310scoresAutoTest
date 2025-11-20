@@ -55,7 +55,16 @@ pipeline {
 
                     # 安装依赖
                     echo "安装Python依赖..."
-                    pip3 install -r requirements.txt
+                    pip3 install --user -r requirements.txt
+
+                    #查看内容
+                    echo "5. requirements.txt内容:"
+                    type requirements.txt
+
+                    echo "步骤3: 验证安装结果"
+                    pip3 show allure-pytest
+                    python -c "import allure; print('✓ Allure导入成功')"
+
 
                     # 检查设备连接
                     echo "检查Android设备..."
