@@ -55,7 +55,7 @@ pipeline {
 
                     # 安装依赖
                     echo "安装Python依赖..."
-                    pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn --force-reinstall
+                    pip3 install -r requirements.txt
 
 
                     # 检查设备连接
