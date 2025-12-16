@@ -55,8 +55,8 @@ pipeline {
 
                     # 安装依赖
                     echo "安装Python依赖..."
-                    python -m pip install --upgrade pip
-                    pip install allure-pytest pytest -i https://pypi.tuna.tsinghua.edu.cn/simple
+                    python3 -m pip3 install --upgrade pip
+                    pip3 install allure-pytest pytest -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 
                     # 检查设备连接
