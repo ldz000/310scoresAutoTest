@@ -6,34 +6,61 @@ import pytest
 import uiautomator2 as u2
 from typing import Generator
 
-
-@pytest.fixture(scope="session",autouse=True)
-def d() -> Generator[u2.Device, None, None]:
-    # 连接设备
-    d = u2.connect("")
-    #清理目录
-    if os.path.exists("./allure-results"):
-        shutil.rmtree("./allure-results",ignore_errors=True)
-    os.makedirs("./allure-results", exist_ok=True)
-    # 启动
-    d.app_start("com.scores.tfz",)
-    yield d
-
-    # 测试结束后清理
-    d.app_stop("com.scores.tfz")
+APP_CONFIGS = {
+    "app1": "com.scores.tfz",
+    "app2": "com.halo.fkkq"
+}
 
 
-#失败自动截图
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call, pytest_html=None):
-    outcome = yield
-    report = outcome.get_result()
-    if report.failed and "device" in item.funcargs:
-        d = item.funcargs["device"]
-        d.screenshot(f"reports/fail_{item.name}.png")
-        # 将截图链接添加到HTML报告
-        if hasattr(report, "extra"):
-            report.extra.append(pytest_html.extras.image(f"reports/fail_{item.name}.png"))
+@pytest.fixture
+def device_factory(request):
+    """设备工厂fixture，用于创建device实例"""
+
+    def _create_device(app_key="app1"):
+        """
+        创建device实例
+        :param device_key: 设备配置键，默认为device1
+        :param app_key: 应用配置键，默认为app1
+        """
+
+        # 获取应用包名
+        app_package = APP_CONFIGS.get(app_key, "com.scores.tfz")
+
+        # 连接设备
+        d = u2.connect("")
+
+        # 清理目录（只在第一次调用时执行）
+        if not hasattr(request.config, 'allure_cleaned'):
+            if os.path.exists("./allure-results"):
+                shutil.rmtree("./allure-results", ignore_errors=True)
+            os.makedirs("./allure-results", exist_ok=True)
+            request.config.allure_cleaned = True
+
+        # 启动应用
+        d.app_stop(app_package)
+        d.app_start(app_package)
+
+        # 返回设备实例
+        return d
+
+    return _create_device
+
+# @pytest.fixture(scope="session",autouse=True)
+# def d() -> Generator[u2.Device, None, None]:
+#     # 连接设备
+#     d = u2.connect("")
+#     #清理目录
+#     if os.path.exists("./allure-results"):
+#         shutil.rmtree("./allure-results",ignore_errors=True)
+#     os.makedirs("./allure-results", exist_ok=True)
+#     # 启动
+#     app_package = APP_CONFIGS.get(app_key, "com.scores.tfz")
+#     d.app_start("com.scores.tfz")
+#     yield d
+#
+#     # 测试结束后清理
+#     d.app_stop("com.scores.tfz")
+
 
 def logout():
     d = u2.connect("")

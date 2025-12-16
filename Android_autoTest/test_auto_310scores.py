@@ -10,7 +10,8 @@ from Android_autoTest.conftest import logout
 
 @allure.epic("310scores Android 自动化测试报告")
 @allure.feature("登录测试(远程仓库版)")
-def test_login(d, self=None):
+def test_login(device_factory):
+    d = device_factory(app_key="app1")
     with allure.step("处理系列弹窗中......."):
         #判断got it 弹窗是否存在
         if d(text="Got It").wait(timeout=20):
@@ -139,9 +140,8 @@ def test_login(d, self=None):
 #         time.sleep(2)
 
 @allure.feature("国家语言切换")
-def test_fllow(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_fllow(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
@@ -208,9 +208,8 @@ def test_fllow(d, self=None):
         d(text="Inggris - English").click()
 
 @allure.feature("新闻模块")
-def test_news(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_news(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
@@ -273,9 +272,8 @@ def test_news(d, self=None):
     #     time.sleep(3)
 
 @allure.feature("比赛详情页")
-def test_match(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_match(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
@@ -326,9 +324,8 @@ def test_match(d, self=None):
         #     d.press("enter")
 
 @allure.feature("联赛主页")
-def test_competion(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_competion(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
@@ -372,9 +369,8 @@ def test_competion(d, self=None):
             assert d(text="Goal Ranking").exists()
 
 @allure.feature("球队主页")
-def test_team(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_team(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
@@ -400,9 +396,8 @@ def test_team(d, self=None):
         assert d(text="Fixtures").exists()
 
 @allure.feature("球员主页")
-def test_player(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_player(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
@@ -433,9 +428,8 @@ def test_player(d, self=None):
         assert d(text="Premier League · League · Round 8").exists()
 
 @allure.feature("日历")
-def test_calendar(d, self=None):
-    d.app_stop("com.scores.tfz")
-    d.app_start("com.scores.tfz")
+def test_calendar(device_factory):
+    d = device_factory(app_key="app1")
     time.sleep(10)
     if d(text="Matches").exists():
         time.sleep(2)
